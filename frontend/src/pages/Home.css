@@ -1,0 +1,67 @@
+.home {
+  padding: 40px;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.home-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+  color: #222;
+}
+
+.search-input {
+  padding: 12px 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 40px auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.empty-message {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+.row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.row::-webkit-scrollbar {
+  height: 8px;
+}
+
+.row::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.row-title {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+.section {
+  margin-top: 60px;
+}
+
+.section-title {
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  color: #222;
+}
