@@ -1,0 +1,77 @@
+.details-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.details-title {
+  margin: 0 0 20px;
+}
+
+.details-main {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.details-poster {
+  width: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+}
+
+.details-content p {
+  margin: 0 0 12px;
+}
+
+.details-description {
+  line-height: 1.5;
+}
+
+.details-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genre-pill {
+  background: #e2e8f0;
+  color: #1e293b;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.details-gallery-title {
+  margin: 30px 0 14px;
+}
+
+.details-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.details-gallery img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.details-error {
+  color: #b91c1c;
+}
+
+@media (max-width: 760px) {
+  .details-main {
+    grid-template-columns: 1fr;
+  }
+
+  .details-poster {
+    max-width: 320px;
+  }
+}

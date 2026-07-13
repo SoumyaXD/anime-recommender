@@ -40,6 +40,20 @@
   margin: 0;
 }
 
+.card .card-genres {
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.card .card-description {
+  font-size: 0.9rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .card button {
   margin-top: auto;
   padding: 8px 12px;

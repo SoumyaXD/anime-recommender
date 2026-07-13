@@ -35,12 +35,23 @@
   grid-column: 1 / -1;
   text-align: center;
 }
+
+.error-message {
+  text-align: center;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
 .row {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   padding-bottom: 10px;
   scroll-behavior: smooth;
+}
+
+.row-item {
+  min-width: 220px;
 }
 
 .row::-webkit-scrollbar {
@@ -64,4 +75,23 @@
   font-size: 1.6rem;
   margin-bottom: 24px;
   color: #222;
+}
+
+.skeleton-card {
+  width: 100%;
+  min-height: 360px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }

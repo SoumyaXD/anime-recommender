@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import "./AnimeCard.css";
+import { useWatchlist } from "../context/Watchlistcontent";
 
-function AnimeCard({ id, title, rating, image, addToWatchlist, watchlist }) {
+function AnimeCard({ id, title, rating, image, description, genres }) {
   const navigate = useNavigate();
-
-  const anime = { id, title, rating };
-  const isAdded = watchlist?.some(a => a.id === id);
+  const { watchlist, addToWatchlist } = useWatchlist();
+  const anime = { id, title, rating, image, description, genres };
+  const isAdded = watchlist?.some((a) => a.id === id);
+  const genreLine = Array.isArray(genres) && genres.length > 0 ? genres.slice(0, 2).join(" | ") : "Genre: Unknown";
 
   return (
     <div className="card" onClick={() => navigate(`/anime/${id}`)}>
@@ -13,7 +15,9 @@ function AnimeCard({ id, title, rating, image, addToWatchlist, watchlist }) {
 
       <h3>{title}</h3>
 
-      <p>⭐ {rating}</p>
+      <p>Rating: {rating}</p>
+      <p className="card-genres">{genreLine}</p>
+      <p className="card-description">{description || "Description not available."}</p>
 
       <button
         onClick={(e) => {
@@ -23,7 +27,7 @@ function AnimeCard({ id, title, rating, image, addToWatchlist, watchlist }) {
         disabled={isAdded}
         className={isAdded ? "added" : "primary"}
       >
-        {isAdded ? "Added ✓" : "Add to Watchlist"}
+        {isAdded ? "Added" : "Add to Watchlist"}
       </button>
     </div>
   );
