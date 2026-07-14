@@ -11,6 +11,6 @@ const router = express.Router();
 
 router.post("/register", authRateLimiter, registerUser);
 router.post("/login", authRateLimiter, loginUser);
-router.get("/me", requireAuth, getCurrentUser);
+router.get("/me", authRateLimiter, requireAuth, getCurrentUser);
 
 module.exports = router;
