@@ -256,6 +256,11 @@ Use this as the next-step roadmap:
 
 - Frontend API endpoint should be configured via:
   - `VITE_API_BASE_URL`
+- Backend auth tokens can be configured via:
+  - `JWT_ACCESS_SECRET` (default: `dev-access-secret-change-me`)
+  - `JWT_ACCESS_EXPIRES_IN` (default: `1h`)
+  - `JWT_ISSUER` (default: `anime-recommender`)
+  - `JWT_AUDIENCE` (default: `anime-recommender-client`)
 - Backend port is currently fixed to `5000` in `backend/server.js` (recommended next change: use `process.env.PORT` with fallback).
 - In production, serve frontend separately (static host/CDN) and run backend behind a reverse proxy/load balancer.
 
@@ -268,6 +273,16 @@ Use this as the next-step roadmap:
   - Returns one anime object.
   - `400` if id is invalid.
   - `404` if id not found.
+
+- `POST /api/auth/register`
+  - Creates user account and returns `{ user, token }`.
+  - Requires `name`, `email`, `password` (password min length 8).
+
+- `POST /api/auth/login`
+  - Returns `{ user, token }` for valid credentials.
+
+- `GET /api/auth/me`
+  - Returns current user from JWT bearer token.
 
 ## Suggested Next Implementation Tasks
 
