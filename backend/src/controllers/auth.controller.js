@@ -1,7 +1,15 @@
 const { register, login, getUserById } = require("../services/auth.service");
 
 function validateEmail(email) {
-  return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  if (typeof email !== "string") {
+    return false;
+  }
+
+  const trimmedEmail = email.trim();
+  const atIndex = trimmedEmail.indexOf("@");
+  const dotIndex = trimmedEmail.lastIndexOf(".");
+
+  return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < trimmedEmail.length - 1;
 }
 
 function validatePassword(password) {
