@@ -2,10 +2,11 @@ const { getAllAnime, getAnimeById } = require("../services/anime.service");
 
 async function listAnime(req, res, next) {
   try {
-    const anime = await getAllAnime();
-    res.json(anime);
+    const { page, limit, q: search, genre } = req.query;
+    const result = await getAllAnime({ page, limit, search, genre });
+    return res.json(result);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 
