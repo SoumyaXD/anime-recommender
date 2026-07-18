@@ -29,7 +29,11 @@ A full-stack anime discovery app with:
 - Popular strip (top 5, unaffected by search/filter)
 - Details page per anime
 - Watchlist page synced to backend (optimistic updates with rollback)
-- `WatchlistContext` reads token from `localStorage` and syncs with `/api/watchlist`
+- Login/Register page (`/auth`) — toggleable form, redirects to home on success
+- `AuthContext` — handles login, register, logout, persists user + token in `localStorage`
+- `WatchlistContext` consumes `AuthContext` — auto-fetches on login, clears on logout
+- Navbar shows user name + logout button when signed in, or "Sign In" link when not
+- Unauthenticated watchlist clicks redirect to `/auth` instead of silently failing
 - Page transitions via Framer Motion
 
 ## Monorepo Structure
@@ -73,8 +77,10 @@ anime-recommender/
         AnimeCard.jsx
         Navbar.jsx
       context/
+        AuthContext.jsx
         Watchlistcontent.jsx
       pages/
+        Auth.jsx
         Home.jsx
         Details.jsx
         Watchlist.jsx
@@ -111,10 +117,11 @@ Main API flow:
 4. `meta` includes `{ total, page, limit, hasNextPage }`.
 
 Auth flow:
-1. `POST /api/auth/register` or `/login` returns a signed JWT.
-2. Client stores token in `localStorage`.
-3. Protected routes require `Authorization: Bearer <token>` header.
-4. `requireAuth` middleware verifies token and attaches `req.auth.sub` (user id).
+1. User registers or logs in via `/auth` page.
+2. `AuthContext` calls `POST /api/auth/register` or `/login`, stores `token` and `user` in `localStorage`.
+3. `WatchlistContext` reacts to `isAuthenticated` from `AuthContext` — fetches watchlist on login, clears on logout.
+4. Protected routes require `Authorization: Bearer <token>` header.
+5. `requireAuth` middleware verifies token and attaches `req.auth.sub` (user id).
 
 ## API Reference
 
@@ -255,16 +262,14 @@ npm --prefix backend run sync:anime -- --pages=12
 - Watchlist persisted to JSON file — not suitable for concurrent writes at scale
 - No automated tests
 - No caching layer
-- Watchlist requires manual login — no login/register UI built yet (token must be set in `localStorage` manually or via API client)
 
 ## Remaining Roadmap
 
-1. Build login/register UI and `AuthContext` in frontend
-2. Move user store and watchlist to PostgreSQL
-3. Add request validation (Zod)
-4. Add structured logging (pino)
-5. Add health check endpoint
-6. Add unit and integration tests (Vitest + supertest)
-7. Containerize with Docker
-8. CI pipeline: lint + test + build on PRs
-9. ML features: recommendation engine, semantic search, anime similarity
+1. Move user store and watchlist to PostgreSQL
+2. Add request validation (Zod)
+3. Add structured logging (pino)
+4. Add health check endpoint
+5. Add unit and integration tests (Vitest + supertest)
+6. Containerize with Docker
+7. CI pipeline: lint + test + build on PRs
+8. ML features: recommendation engine, semantic search, anime similarity
