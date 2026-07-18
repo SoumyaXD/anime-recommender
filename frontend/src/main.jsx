@@ -3,14 +3,17 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
+import { AuthProvider } from "./context/AuthContext";
 import { WatchlistProvider } from "./context/Watchlistcontent";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <WatchlistProvider>
-        <App />
-      </WatchlistProvider>
+      <AuthProvider>
+        <WatchlistProvider>
+          <App />
+        </WatchlistProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );

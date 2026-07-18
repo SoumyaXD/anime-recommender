@@ -1,20 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const WatchlistContext = createContext();
 
-function getToken() {
-  return localStorage.getItem("token");
-}
-
 export function WatchlistProvider({ children }) {
+  const { isAuthenticated } = useAuth();
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const isAuthenticated = Boolean(getToken());
+  function getToken() {
+    return localStorage.getItem("token");
+  }
 
-  // Fetch full watchlist from server
   const fetchWatchlist = useCallback(async () => {
     const token = getToken();
     if (!token) return;
@@ -29,12 +28,13 @@ export function WatchlistProvider({ children }) {
         setWatchlist(data);
       }
     } catch {
-      // silently fail — watchlist stays empty
+      // silently fail
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Re-sync whenever auth state changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchWatchlist();
@@ -47,7 +47,6 @@ export function WatchlistProvider({ children }) {
     const token = getToken();
     if (!token) return;
 
-    // Optimistic update
     setWatchlist((prev) => (prev.find((a) => a.id === anime.id) ? prev : [...prev, anime]));
 
     try {
@@ -59,11 +58,7 @@ export function WatchlistProvider({ children }) {
         },
         body: JSON.stringify({ animeId: anime.id }),
       });
-
-      if (!res.ok) {
-        // Rollback on failure
-        setWatchlist((prev) => prev.filter((a) => a.id !== anime.id));
-      }
+      if (!res.ok) setWatchlist((prev) => prev.filter((a) => a.id !== anime.id));
     } catch {
       setWatchlist((prev) => prev.filter((a) => a.id !== anime.id));
     }
@@ -73,7 +68,6 @@ export function WatchlistProvider({ children }) {
     const token = getToken();
     if (!token) return;
 
-    // Optimistic update
     const previous = watchlist;
     setWatchlist((prev) => prev.filter((a) => a.id !== id));
 
@@ -82,10 +76,7 @@ export function WatchlistProvider({ children }) {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!res.ok) {
-        setWatchlist(previous);
-      }
+      if (!res.ok) setWatchlist(previous);
     } catch {
       setWatchlist(previous);
     }
