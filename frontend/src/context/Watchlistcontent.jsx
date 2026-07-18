@@ -1,31 +1,99 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const WatchlistContext = createContext();
 
+function getToken() {
+  return localStorage.getItem("token");
+}
+
 export function WatchlistProvider({ children }) {
-  const [watchlist, setWatchlist] = useState(() => {
-    const saved = localStorage.getItem("watchlist");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [watchlist, setWatchlist] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const addToWatchlist = (anime) => {
-    setWatchlist((prev) => {
-      if (prev.find((a) => a.id === anime.id)) return prev;
-      return [...prev, anime];
-    });
-  };
+  const isAuthenticated = Boolean(getToken());
 
-  const removeFromWatchlist = (id) => {
-    setWatchlist((prev) => prev.filter((anime) => anime.id !== id));
-  };
+  // Fetch full watchlist from server
+  const fetchWatchlist = useCallback(async () => {
+    const token = getToken();
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/watchlist`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWatchlist(data);
+      }
+    } catch {
+      // silently fail — watchlist stays empty
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+    if (isAuthenticated) {
+      fetchWatchlist();
+    } else {
+      setWatchlist([]);
+    }
+  }, [isAuthenticated, fetchWatchlist]);
+
+  const addToWatchlist = useCallback(async (anime) => {
+    const token = getToken();
+    if (!token) return;
+
+    // Optimistic update
+    setWatchlist((prev) => (prev.find((a) => a.id === anime.id) ? prev : [...prev, anime]));
+
+    try {
+      const res = await fetch(`${API_BASE}/api/watchlist`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ animeId: anime.id }),
+      });
+
+      if (!res.ok) {
+        // Rollback on failure
+        setWatchlist((prev) => prev.filter((a) => a.id !== anime.id));
+      }
+    } catch {
+      setWatchlist((prev) => prev.filter((a) => a.id !== anime.id));
+    }
+  }, []);
+
+  const removeFromWatchlist = useCallback(async (id) => {
+    const token = getToken();
+    if (!token) return;
+
+    // Optimistic update
+    const previous = watchlist;
+    setWatchlist((prev) => prev.filter((a) => a.id !== id));
+
+    try {
+      const res = await fetch(`${API_BASE}/api/watchlist/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        setWatchlist(previous);
+      }
+    } catch {
+      setWatchlist(previous);
+    }
   }, [watchlist]);
 
   return (
     <WatchlistContext.Provider
-      value={{ watchlist, addToWatchlist, removeFromWatchlist }}
+      value={{ watchlist, loading, addToWatchlist, removeFromWatchlist, fetchWatchlist }}
     >
       {children}
     </WatchlistContext.Provider>
